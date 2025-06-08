@@ -32,8 +32,11 @@ jobs:
       - name: Download Linux kernel source
         run: |
           # 根据获取到的最新版本下载内核源码
-          KERNEL_MAJOR_MINOR=$(echo "${{ env.LATEST_STABLE_VERSION }}" | cut -d'.' -f1,2)
-          wget https://cdn.kernel.org/pub/linux/kernel/v"${KERNEL_MAJOR_MINOR}".x/linux-"${{ env.LATEST_STABLE_VERSION }}".tar.xz
+          # 注意：这里修正了 wget 的 URL 路径，vX.Y.x/ 对于特定小版本是不正确的
+          # 应该是 vX.x/ 或者直接是 vX.Y/
+          # 最安全的做法是直接使用 v<MAJOR>.x/
+          KERNEL_MAJOR_VERSION=$(echo "${{ env.LATEST_STABLE_VERSION }}" | cut -d'.' -f1) # 提取主版本号，如 '6'
+          wget https://cdn.kernel.org/pub/linux/kernel/v"${KERNEL_MAJOR_VERSION}".x/linux-"${{ env.LATEST_STABLE_VERSION }}".tar.xz
           tar -xf linux-"${{ env.LATEST_STABLE_VERSION }}".tar.xz
           mv linux-"${{ env.LATEST_STABLE_VERSION }}" linux-kernel-it87
 
